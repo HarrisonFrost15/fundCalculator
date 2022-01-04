@@ -1,0 +1,12 @@
+*{
+    margin:0;
+    padding:0;
+}
+
+body{
+    margin:10%;
+}
+div{
+    padding:1em;
+    background-color:dodgerblue;
+}
