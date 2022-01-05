@@ -8,11 +8,34 @@ class Product{
     name:string;
     price:number;
     servings:number;
+    consumption:number;
 
-    constructor(productName:string,price:number,totalServings:number){
+    constructor(productName:string,price:number,totalServings:number,consumption:number){
         this.name = productName;
         this.price = price
         this.servings = totalServings
+        this.consumption = consumption
+    }
+    render(){
+        let newProduct = document.createElement("div")
+        document.body.appendChild(newProduct!)
+
+        let newProductName = document.createElement("h1")
+        newProductName.innerText = (`Name: ${this.name}`);
+        newProduct!.appendChild(newProductName);
+
+        let newPrice = document.createElement("p")
+        newPrice.innerText = `Price:  £${this.price}`;
+        newProduct!.appendChild(newPrice)
+
+        let newServings = document.createElement("p")
+        newServings.innerText = `${this.servings} servings`;
+        newProduct!.appendChild(newServings)
+
+        let consumption = document.createElement("p")
+        // consumption.innerText = `${this.servings} servings`;
+        consumption.innerText = `Consumption: ${this.consumption}`
+        newProduct!.appendChild(consumption)
     }
 }
 
@@ -33,45 +56,46 @@ inputs!.appendChild(price)
 let servings = document.createElement("input")
 servings.id = "servings"    
 servings.setAttribute("name","inputBox")
-
 servings.placeholder = "Servings";
 inputs!.appendChild(servings)
 
-let addProduct = document.createElement("button")
-addProduct.addEventListener("click", createProduct)
-addProduct.innerText = "Add"
-inputs!.appendChild(addProduct)
+let consumption = document.createElement("input")
+consumption.id = "consumption"    
+consumption.setAttribute("name","inputBox")
+consumption.placeholder = "consumption";
+inputs!.appendChild(consumption)
 
-let products:[] = []
+let addButton = document.createElement("button")
+addButton.addEventListener("click", createProduct)
+addButton.innerText = "Add"
+inputs!.appendChild(addButton)
 
-let coffee = new Product("Coffee", 5, 150);
-products.push(coffee)
+let products:Product[] = []
 
-let Tea = new Product("Tea",10,200)
+let prd = JSON.parse(localStorage.products)
+for(let i = 0;i < prd.length;i++){
+    products.push(new Product(prd[i].name,prd[i].price,prd[i].servings,prd[i].consumption))
+}
 
-products = JSON.parse(localStorage.getItem("products")!)
+displayProducts();
+
+function displayProducts(){
+    for(let i = 0;i < products.length;i++){
+        products[i].render();
+    }
+}
 
 function createProduct(){
-    
-    let newProduct = document.createElement("div")
-    document.body.appendChild(newProduct!)
 
-    let newProductName = document.createElement("h1")
-    newProductName.innerText = (`Name: ${productName.value}`);
-    newProduct!.appendChild(newProductName);
+    let newProductName = (<HTMLInputElement>document.getElementById("productName")).value
+    let newPrice:number = parseInt((<HTMLInputElement>document.getElementById("price")).value)
+    let newServings:number = parseInt((<HTMLInputElement>document.getElementById("servings")).value)
 
-    let newPrice = document.createElement("p")
-    newPrice.innerText = `Price:  £${price.value}`;
-    newProduct!.appendChild(newPrice)
-
-    let newServings = document.createElement("p")
-    newServings.innerText = `${servings.value} servings`;
-    newProduct!.appendChild(newServings)
-
-    let newDrink={name:newProductName,price:newPrice,servings:newServings}
-    products.push(newDrink)
+    let newItem = new Product(newProductName,newPrice,newServings,0)
+    products.push(newItem)
 
     saveProduct()
+    displayProducts()
 }
 
 function saveProduct(){
@@ -79,25 +103,55 @@ function saveProduct(){
     localStorage.setItem("products", productString)
 }
 
-//teacher's consumption per day
-// let make=(<HTMLInputElement>document.getElementById("make")).value
-// let model=(<HTMLInputElement>document.getElementById("model")).value
-// let mileage:number=parseInt((<HTMLInputElement>document.getElementById("mileage")).value)
-// let price=parseInt((<HTMLInputElement>document.getElementById("price")).value)
+//teacher's consumption per day - coffee,  tea, milk, sugar, days per term
+let consumptionInputs = document.getElementById("consumptionInputs")
 
-// let newCar={make:make,model:model,mileage:mileage,price:price}
-//     cars.push(newCar)
+// let teacherCoffee = document.createElement("input");
+// teacherCoffee.id = "coffee"
+// teacherCoffee.setAttribute("coffee","inputBox")
+// teacherCoffee.placeholder = "Coffee Consumption";
+// consumption!.appendChild(teacherCoffee);
 
-//     let newDrink={name:name,}
+// let tea = document.createElement("input");
+// tea.id = "tea"
+// tea.setAttribute("tea","inputBox")
+// tea.placeholder = "Tea Consumption";
+// consumption!.appendChild(tea);
+
+// let milk = document.createElement("input");
+// milk.id = "milk"
+// milk.setAttribute("milk","inputBox")
+// milk.placeholder = "Milk Consumption";
+// consumption!.appendChild(milk);
+
+// let sugar = document.createElement("input");
+// sugar.id = "sugar"
+// sugar.setAttribute("sugar","inputBox")
+// sugar.placeholder = "Sugar Consumption";
+// consumption!.appendChild(sugar);
 
 
-// let cars:Car[]=[]
-// cars.push(new Car("BMW", "X2", "Silver", 100000, 25000))
-// cars = JSON.parse(localStorage.getItem("cars")!)
-// console.log(cars)
-// if (cars == null){
-//     cars=generateRandomCars(makes,20)
-//     saveCars()
+let daysPerTerm = document.createElement("input");
+daysPerTerm.id = "days"
+daysPerTerm.setAttribute("days","inputBox")
+daysPerTerm.placeholder = "Days Per Term";
+consumptionInputs!.appendChild(daysPerTerm);
+let bottomLine = document.createElement("h2")
+document.body.appendChild(bottomLine)
 
+let calculateButton= document.createElement("button")
+calculateButton.innerText="Calculate"
+consumptionInputs?.appendChild(calculateButton)
+calculateButton.addEventListener("click",function(){bottomLine.innerText=calculateTheCost().toString()})
 
-//calculate the cost
+function calculateTheCost(){
+
+    let totalCost = 0
+    let daysValue = parseInt((<HTMLInputElement>document.getElementById("days"))!.value)
+    for(let i = 0;i < products.length;i++){
+        let consumption = products[i].consumption
+        let cost:number = (products[i].price/products[i].servings) * daysValue * products[i].consumption
+        totalCost += cost
+    }
+    return totalCost
+}

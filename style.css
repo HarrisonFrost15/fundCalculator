@@ -9,8 +9,7 @@ body{
 }
 div{
     padding:1em;
-    background-color:rgb(0, 0, 0);
+    background-color:dodgerblue;
     color: white;
     font-family: 'Inconsolata', monospace;
-    
 }

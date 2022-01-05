@@ -4,10 +4,28 @@
 // Calculate the cost (divide price by serving; multiply by consumption per day)
 // Save 'products' to local storage
 class Product {
-    constructor(productName, price, totalServings) {
+    constructor(productName, price, totalServings, consumption) {
         this.name = productName;
         this.price = price;
         this.servings = totalServings;
+        this.consumption = consumption;
+    }
+    render() {
+        let newProduct = document.createElement("div");
+        document.body.appendChild(newProduct);
+        let newProductName = document.createElement("h1");
+        newProductName.innerText = (`Name: ${this.name}`);
+        newProduct.appendChild(newProductName);
+        let newPrice = document.createElement("p");
+        newPrice.innerText = `Price:  £${this.price}`;
+        newProduct.appendChild(newPrice);
+        let newServings = document.createElement("p");
+        newServings.innerText = `${this.servings} servings`;
+        newProduct.appendChild(newServings);
+        let consumption = document.createElement("p");
+        // consumption.innerText = `${this.servings} servings`;
+        consumption.innerText = `Consumption: ${this.consumption}`;
+        newProduct.appendChild(consumption);
     }
 }
 let inputs = document.getElementById("inputs");
@@ -26,33 +44,80 @@ servings.id = "servings";
 servings.setAttribute("name", "inputBox");
 servings.placeholder = "Servings";
 inputs.appendChild(servings);
-let addProduct = document.createElement("button");
-addProduct.addEventListener("click", createProduct);
-addProduct.innerText = "Add";
-inputs.appendChild(addProduct);
+let consumption = document.createElement("input");
+consumption.id = "consumption";
+consumption.setAttribute("name", "inputBox");
+consumption.placeholder = "consumption";
+inputs.appendChild(consumption);
+let addButton = document.createElement("button");
+addButton.addEventListener("click", createProduct);
+addButton.innerText = "Add";
+inputs.appendChild(addButton);
 let products = [];
-let coffee = new Product("Coffee", 5, 150);
-products.push(coffee);
-let Tea = new Product("Tea", 10, 200);
-products = JSON.parse(localStorage.getItem("products"));
+let prd = JSON.parse(localStorage.products);
+for (let i = 0; i < prd.length; i++) {
+    products.push(new Product(prd[i].name, prd[i].price, prd[i].servings, prd[i].consumption));
+}
+displayProducts();
+function displayProducts() {
+    for (let i = 0; i < products.length; i++) {
+        products[i].render();
+    }
+}
 function createProduct() {
-    let newProduct = document.createElement("div");
-    document.body.appendChild(newProduct);
-    let newProductName = document.createElement("h1");
-    newProductName.innerText = (`Name: ${productName.value}`);
-    newProduct.appendChild(newProductName);
-    let newPrice = document.createElement("p");
-    newPrice.innerText = `Price:  £${price.value}`;
-    newProduct.appendChild(newPrice);
-    let newServings = document.createElement("p");
-    newServings.innerText = `${servings.value} servings`;
-    newProduct.appendChild(newServings);
-    let newDrink = { name: newProductName, price: newPrice, servings: newServings };
-    products.push(newDrink);
+    let newProductName = document.getElementById("productName").value;
+    let newPrice = parseInt(document.getElementById("price").value);
+    let newServings = parseInt(document.getElementById("servings").value);
+    let newItem = new Product(newProductName, newPrice, newServings, 0);
+    products.push(newItem);
     saveProduct();
+    displayProducts();
 }
 function saveProduct() {
     let productString = JSON.stringify(products);
     localStorage.setItem("products", productString);
+}
+//teacher's consumption per day - coffee,  tea, milk, sugar, days per term
+let consumptionInputs = document.getElementById("consumptionInputs");
+// let teacherCoffee = document.createElement("input");
+// teacherCoffee.id = "coffee"
+// teacherCoffee.setAttribute("coffee","inputBox")
+// teacherCoffee.placeholder = "Coffee Consumption";
+// consumption!.appendChild(teacherCoffee);
+// let tea = document.createElement("input");
+// tea.id = "tea"
+// tea.setAttribute("tea","inputBox")
+// tea.placeholder = "Tea Consumption";
+// consumption!.appendChild(tea);
+// let milk = document.createElement("input");
+// milk.id = "milk"
+// milk.setAttribute("milk","inputBox")
+// milk.placeholder = "Milk Consumption";
+// consumption!.appendChild(milk);
+// let sugar = document.createElement("input");
+// sugar.id = "sugar"
+// sugar.setAttribute("sugar","inputBox")
+// sugar.placeholder = "Sugar Consumption";
+// consumption!.appendChild(sugar);
+let daysPerTerm = document.createElement("input");
+daysPerTerm.id = "days";
+daysPerTerm.setAttribute("days", "inputBox");
+daysPerTerm.placeholder = "Days Per Term";
+consumptionInputs.appendChild(daysPerTerm);
+let bottomLine = document.createElement("h2");
+document.body.appendChild(bottomLine);
+let calculateButton = document.createElement("button");
+calculateButton.innerText = "Calculate";
+consumptionInputs === null || consumptionInputs === void 0 ? void 0 : consumptionInputs.appendChild(calculateButton);
+calculateButton.addEventListener("click", function () { bottomLine.innerText = calculateTheCost().toString(); });
+function calculateTheCost() {
+    let totalCost = 0;
+    let daysValue = parseInt(document.getElementById("days").value);
+    for (let i = 0; i < products.length; i++) {
+        let consumption = products[i].consumption;
+        let cost = (products[i].price / products[i].servings) * daysValue * products[i].consumption;
+        totalCost += cost;
+    }
+    return totalCost;
 }
 //# sourceMappingURL=script.js.map
