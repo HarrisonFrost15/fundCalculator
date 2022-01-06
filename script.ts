@@ -72,6 +72,10 @@ inputs!.appendChild(addButton)
 
 let products:Product[] = []
 
+if (products != null){
+    products.push(new Product("",0,0,0))
+}
+
 let prd = JSON.parse(localStorage.products)
 for(let i = 0;i < prd.length;i++){
     products.push(new Product(prd[i].name,prd[i].price,prd[i].servings,prd[i].consumption))
@@ -103,9 +107,6 @@ function saveProduct(){
     localStorage.setItem("products", productString)
 }
 
-//teacher's consumption per day - coffee,  tea, milk, sugar, days per term
-let consumptionInputs = document.getElementById("consumptionInputs")
-
 // let teacherCoffee = document.createElement("input");
 // teacherCoffee.id = "coffee"
 // teacherCoffee.setAttribute("coffee","inputBox")
@@ -130,6 +131,8 @@ let consumptionInputs = document.getElementById("consumptionInputs")
 // sugar.placeholder = "Sugar Consumption";
 // consumption!.appendChild(sugar);
 
+//teacher's consumption per day - coffee,  tea, milk, sugar, days per term
+let consumptionInputs = document.getElementById("consumptionInputs")
 
 let daysPerTerm = document.createElement("input");
 daysPerTerm.id = "days"
